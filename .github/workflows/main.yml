@@ -9,6 +9,9 @@ jobs:
   retrain-model:
     runs-on: ubuntu-latest
 
+    env:
+      CONDA_PKGS_DIRS: ~/conda_pkgs_dir
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
