@@ -12,6 +12,16 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+      
+      - name: Cache Conda
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/conda_pkgs_dir
+            ~/.conda/envs
+          key: conda-${{ runner.os }}-${{ hashFiles('MLProject/conda.yaml') }}
+          restore-keys: |
+            conda-${{ runner.os }}-
 
       - name: Clean mlruns directory
         run: |
