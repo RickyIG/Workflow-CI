@@ -32,10 +32,6 @@ jobs:
           auto-activate-base: false
           show-channel-urls: true
 
-      - name: Install MLflow
-        shell: bash -l {0}
-        run: pip install mlflow
-
       - name: Run MLflow Project
         shell: bash -l {0}
         run: |
