@@ -1,0 +1,54 @@
+name: MLflow CI - Telco Churn
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  retrain-model:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Clean mlruns directory
+        run: |
+          cd MLProject
+          rm -rf mlruns
+          mkdir -p mlruns
+
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.9"
+
+      - name: Setup Miniconda
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          activate-environment: telco-churn-env
+          environment-file: MLProject/conda.yaml
+          auto-activate-base: false
+          show-channel-urls: true
+
+      - name: Install MLflow
+        shell: bash -l {0}
+        run: pip install mlflow
+
+      - name: Run MLflow Project
+        shell: bash -l {0}
+        run: |
+          eval "$(conda shell.bash hook)"
+          conda activate telco-churn-env
+          mlflow run ./MLProject
+
+      - name: Upload MLruns artifact
+        uses: actions/upload-artifact@v4
+        with:
+          path: mlruns/
+
+      - name: Get latest MLflow run_id
+        run: |
+          RUN_ID=$(mlflow runs list --order-by start_time desc --max-results 1 | awk 'NR==2 {print $1}')
+          echo "Latest MLflow run_id: $RUN_ID"
